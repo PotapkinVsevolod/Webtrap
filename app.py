@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 
 @app.route('/<path:path>', methods=["DELETE", "GET", "PATCH", "POST", "PUT", "TRACE"])
-def method(path):
+def query(path):
     return 'OK', 200
 
 
