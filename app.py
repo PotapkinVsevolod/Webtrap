@@ -17,7 +17,11 @@ log.setLevel(logging.INFO)
 
 @app.route('/<path:path>', methods=["DELETE", "GET", "PATCH", "POST", "PUT", "TRACE"])
 def query(path):
-    log.info(f'{request.method} - {request.path} - {request.args.to_dict()}')
+    log_message = f'{request.method} - {request.path} - {request.args.to_dict()}'
+    if request.method == "GET":
+        log.info(log_message)
+    else:
+        log.error(log_message)
     return 'OK', 200
 
 

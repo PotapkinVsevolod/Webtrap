@@ -4,20 +4,21 @@ from datetime import datetime, timedelta
 from app import app
 
 
-class TestNotGetMethods(unittest.TestCase):
-    def test_request_make_logs_entry(self) -> None:
+class TestLogging(unittest.TestCase):
+    def setUp(self) -> None:
         self.client = app.test_client()
         self.path = 'test/url/1/1.2'
         self.params = 'first_param=first_value&second_param=second_value'
         self.url = f'{self.path}?{self.params}'
 
-        for self.method, self.request in [
-            ("GET", self.client.get),
-            ("DELETE", self.client.delete),
-            ("PATCH", self.client.patch),
-            ("POST", self.client.post),
-            ("PUT", self.client.put),
-            ("TRACE", self.client.trace),
+    def test_request_make_logs_entries(self) -> None:
+        for self.method, self.request, self.level in [
+            ("GET", self.client.get, 'INFO'),
+            ("DELETE", self.client.delete, 'ERROR'),
+            ("PATCH", self.client.patch, 'ERROR'),
+            ("POST", self.client.post, 'ERROR'),
+            ("PUT", self.client.put, 'ERROR'),
+            ("TRACE", self.client.trace, 'ERROR'),
         ]:
 
             now_time = datetime.utcnow()
@@ -29,6 +30,7 @@ class TestNotGetMethods(unittest.TestCase):
                 last_entry = log.readlines()[-1]
                 self.assertIn(self.path, last_entry)
                 self.assertIn(self.method, last_entry)
+                self.assertIn(self.level, last_entry)
                 self.assertIn("{'first_param': 'first_value', 'second_param': 'second_value'}", last_entry)
 
                 timestamp = datetime.strptime(last_entry[:19], '%Y-%m-%d %H:%M:%S')
